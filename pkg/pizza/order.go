@@ -70,7 +70,7 @@ type Order struct {
 	Status                int                    `json:"Status"`
 }
 
-type Amounts map[string]float64
+type Amounts map[string]float32
 
 type Payment struct{}
 
@@ -102,7 +102,7 @@ func (order *Order) AddProduct(product *OrderProduct) {
 }
 
 // ValidateOrder validates the order and returns its price
-func (c *Client) ValidateOrder(order *Order) (float64, error) {
+func (c *Client) ValidateOrder(order *Order) (float32, error) {
 	request := &OrderRequest{Order: order}
 
 	b := new(bytes.Buffer)
