@@ -1,5 +1,11 @@
 package pizza
 
+import (
+	"encoding/json"
+	"fmt"
+	"net/url"
+)
+
 type Menu struct {
 	Meta     MenuMeta             `json:"Misc"`
 	Flavors  map[string]ObjectMap `json:"Flavors"`
@@ -63,3 +69,29 @@ type Variant struct {
 // type Categorization struct{}
 // type Coupons struct{}
 // type Sides map[string]Side
+
+func (c *Client) GetStoreMenu(storeID string) (*Menu, error) {
+	url, err := url.Parse(fmt.Sprintf(menuURL, storeID))
+	if err != nil {
+		return nil, err
+	}
+
+	q := url.Query()
+	q.Add("lang", "en")
+	q.Add("structured", "true")
+	url.RawQuery = q.Encode()
+
+	resp, err := c.Get(url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	menu := &Menu{}
+	if err := json.NewDecoder(resp.Body).Decode(menu); err != nil {
+		return nil, err
+	}
+
+	return menu, nil
+}
