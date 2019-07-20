@@ -70,7 +70,7 @@ type Order struct {
 	Status                int                    `json:"Status"`
 }
 
-type Amounts struct{}
+type Amounts map[string]float64
 
 type Payment struct{}
 
@@ -101,33 +101,34 @@ func (order *Order) AddProduct(product *OrderProduct) {
 	order.Products = append(order.Products, product)
 }
 
-func (c *Client) ValidateOrder(order *Order) error {
+// ValidateOrder validates the order and returns its price
+func (c *Client) ValidateOrder(order *Order) (float64, error) {
 	request := &OrderRequest{Order: order}
 
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(request); err != nil {
-		return err
+		return 0, err
 	}
 
-	resp, err := c.Post(validationURL, "application/json", b)
+	resp, err := c.Post(pricingURL, "application/json", b)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	defer resp.Body.Close()
 
 	returnedOrder := &OrderRequest{}
 	if err := json.NewDecoder(resp.Body).Decode(returnedOrder); err != nil {
-		return err
+		return 0, err
 	}
 
 	if returnedOrder.Order.Status != 1 {
-		return errors.New("order invalid, please confirm input")
+		return 0, errors.New("order invalid, please confirm input")
 	}
 
 	if len(returnedOrder.Order.Products) == 0 || len(returnedOrder.Order.Products) != len(order.Products) {
-		return errors.New("not all products were returned, possibly invalid product submitted")
+		return 0, errors.New("not all products were returned, possibly invalid product submitted")
 	}
 
-	return nil
+	return returnedOrder.Order.Amounts["Customer"], nil
 }
