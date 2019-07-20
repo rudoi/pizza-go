@@ -10,6 +10,7 @@ type Store struct {
 	IsDeliveryStore bool        `json:"IsDeliveryStore"`
 	IsOpen          bool        `json:"IsOpen"`
 	OpenStatus      *OpenStatus `json:"ServiceIsOpen"`
+	Address         string      `json:"AddressDescription"`
 }
 
 type OpenStatus struct {
