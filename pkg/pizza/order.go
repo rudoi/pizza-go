@@ -3,9 +3,8 @@ package pizza
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 
-	"github.com/pkg/errors"
+	"errors"
 )
 
 type OrderRequest struct {
@@ -123,7 +122,7 @@ func (c *Client) ValidateOrder(order *Order) error {
 	}
 
 	if returnedOrder.Order.Status != 1 {
-		return fmt.Errorf("returned order: %+v", returnedOrder)
+		return errors.New("order invalid, please confirm input")
 	}
 
 	if len(returnedOrder.Order.Products) == 0 || len(returnedOrder.Order.Products) != len(order.Products) {
