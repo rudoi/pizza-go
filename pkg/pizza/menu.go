@@ -12,6 +12,7 @@ type Menu struct {
 	Products map[string]Product   `json:"Products"`
 	Sizes    map[string]ObjectMap `json:"Sizes"`
 	Toppings map[string]ObjectMap `json:"Toppings"`
+	Variants map[string]Variant   `json:"Variants"`
 }
 
 type MenuMeta struct {

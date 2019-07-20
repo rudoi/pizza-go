@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/rudoi/pizza/pkg/pizza"
+	"github.com/rudoi/pizza-go/pkg/pizza"
 )
 
 func main() {
