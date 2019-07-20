@@ -24,14 +24,14 @@ type StoresResponse struct {
 }
 
 type Address struct {
-	Street       string `json:"Street"`
-	StreetNumber string `json:"StreetNumber"`
-	StreetName   string `json:"StreetName"`
-	UnitType     string `json:"UnitType"`
-	UnitNumber   string `json:"UnitNumber"`
-	City         string `json:"City"`
-	Region       string `json:"Region"`
-	PostalCode   string `json:"PostalCode"`
+	Street       string `json:"Street,omitempty"`
+	StreetNumber string `json:"StreetNumber,omitempty"`
+	StreetName   string `json:"StreetName,omitempty"`
+	UnitType     string `json:"UnitType,omitempty"`
+	UnitNumber   string `json:"UnitNumber,omitempty"`
+	City         string `json:"City,omitempty"`
+	Region       string `json:"Region,omitempty"`
+	PostalCode   string `json:"PostalCode,omitempty"`
 }
 
 func (c *Client) GetNearestStore(address *Address) (*Store, error) {
