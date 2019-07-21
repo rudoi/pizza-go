@@ -101,6 +101,7 @@ func (c *Client) GetStoreMenu(storeID string) (*Menu, error) {
 // Rather than include a ton of lookup logic for coupons,
 // just look up the ridiculous 50% off coupon that sometimes
 // exists.
+// TODO: real coupon lookups
 func (m *Menu) GetFiftyPercentCouponCode() string {
 	for _, coupon := range m.Coupons {
 		if coupon.ImageCode == "OLO50" {
