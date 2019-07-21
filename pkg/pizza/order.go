@@ -15,21 +15,21 @@ type OrderRequest struct {
 }
 
 type OrderProduct struct {
-	ID                 int                    `json:"ID"`
-	Code               string                 `json:"Code"`
-	Qty                int                    `json:"Qty"`
-	CategoryCode       string                 `json:"CategoryCode"`
-	FlavorCode         string                 `json:"FlavorCode"`
-	Status             int                    `json:"Status"`
-	LikeProductID      int                    `json:"LikeProductID"`
-	Name               string                 `json:"Name"`
-	IsNew              bool                   `json:"IsNew"`
-	NeedsCustomization bool                   `json:"NeedsCustomization"`
-	AutoRemove         bool                   `json:"AutoRemove"`
-	Fulfilled          bool                   `json:"Fulfilled"`
-	Options            map[string]*Option     `json:"Options"`
-	Tags               map[string]interface{} `json:"Tags"`
-	Descriptions       []*Description         `json:"descriptions"`
+	ID                 int                    `json:"ID,omitempty"`
+	Code               string                 `json:"Code,omitempty"`
+	Qty                int                    `json:"Qty,omitempty"`
+	CategoryCode       string                 `json:"CategoryCode,omitempty"`
+	FlavorCode         string                 `json:"FlavorCode,omitempty"`
+	Status             int                    `json:"Status,omitempty"`
+	LikeProductID      int                    `json:"LikeProductID,omitempty"`
+	Name               string                 `json:"Name,omitempty"`
+	IsNew              bool                   `json:"IsNew,omitempty"`
+	NeedsCustomization bool                   `json:"NeedsCustomization,omitempty"`
+	AutoRemove         bool                   `json:"AutoRemove,omitempty"`
+	Fulfilled          bool                   `json:"Fulfilled,omitempty"`
+	Options            map[string]*Option     `json:"Options,omitempty"`
+	Tags               map[string]interface{} `json:"Tags,omitempty"`
+	Descriptions       []*Description         `json:"descriptions,omitempty"`
 }
 
 type Description struct {
