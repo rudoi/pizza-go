@@ -114,7 +114,9 @@ func (order *Order) AddProduct(product *OrderProduct) {
 }
 
 func (order *Order) AddCoupon(code string) {
-	order.Coupons = append(order.Coupons, &ObjectCode{Code: code})
+	if code != "" {
+		order.Coupons = append(order.Coupons, &ObjectCode{Code: code})
+	}
 }
 
 // ValidateOrder validates the order and returns its price
