@@ -7,12 +7,13 @@ import (
 )
 
 type Menu struct {
-	Meta     MenuMeta             `json:"Misc"`
-	Flavors  map[string]ObjectMap `json:"Flavors"`
-	Products map[string]Product   `json:"Products"`
-	Sizes    map[string]ObjectMap `json:"Sizes"`
-	Toppings map[string]ObjectMap `json:"Toppings"`
-	Variants map[string]Variant   `json:"Variants"`
+	Meta     MenuMeta               `json:"Misc"`
+	Flavors  map[string]*ObjectMap  `json:"Flavors"`
+	Products map[string]*Product    `json:"Products"`
+	Sizes    map[string]*ObjectMap  `json:"Sizes"`
+	Toppings map[string]*ObjectMap  `json:"Toppings"`
+	Variants map[string]*Variant    `json:"Variants"`
+	Coupons  map[string]*ObjectInfo `json:"Coupons"`
 }
 
 type MenuMeta struct {
@@ -29,6 +30,7 @@ type ObjectMap map[string]ObjectInfo
 
 type ObjectInfo struct {
 	Code        string                 `json:"Code"`
+	ImageCode   string                 `json:"ImageCode"`
 	Description string                 `json:"Description"`
 	Local       bool                   `json:"Local"`
 	Name        string                 `json:"Name"`
@@ -68,7 +70,6 @@ type Variant struct {
 
 // not sure if needed yet
 // type Categorization struct{}
-// type Coupons struct{}
 // type Sides map[string]Side
 
 func (c *Client) GetStoreMenu(storeID string) (*Menu, error) {
@@ -95,4 +96,17 @@ func (c *Client) GetStoreMenu(storeID string) (*Menu, error) {
 	}
 
 	return menu, nil
+}
+
+// Rather than include a ton of lookup logic for coupons,
+// just look up the ridiculous 50% off coupon that sometimes
+// exists.
+func (m *Menu) GetFiftyPercentCouponCode() string {
+	for _, coupon := range m.Coupons {
+		if coupon.ImageCode == "OLO50" {
+			return coupon.Code
+		}
+	}
+
+	return ""
 }

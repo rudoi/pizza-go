@@ -68,6 +68,7 @@ type Order struct {
 	EstimatedWaitMinutes  string                 `json:"EstimatedWaitMinutes"`
 	PriceOrderTime        string                 `json:"PriceOrderTime"`
 	Status                int                    `json:"Status"`
+	StatusItems           []*ObjectInfo          `json:"StatusItems"`
 }
 
 type Amounts map[string]float64
@@ -128,6 +129,12 @@ func (c *Client) ValidateOrder(order *Order) (float64, error) {
 
 	if len(returnedOrder.Order.Products) == 0 || len(returnedOrder.Order.Products) != len(order.Products) {
 		return 0, errors.New("not all products were returned, possibly invalid product submitted")
+	}
+
+	for _, item := range returnedOrder.Order.StatusItems {
+		if item.Code == "BelowMinimumDeliveryAmount" {
+			return 0, errors.New("order does not meet minimum delivery price")
+		}
 	}
 
 	return returnedOrder.Order.Amounts["Customer"], nil
