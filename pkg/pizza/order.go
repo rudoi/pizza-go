@@ -107,6 +107,13 @@ func (order *Order) WithAddress(address *Address) *Order {
 	return order
 }
 
+func (order *Order) WithCustomerInfo(firstName, lastName, email string) *Order {
+	order.FirstName = firstName
+	order.LastName = lastName
+	order.Email = email
+	return order
+}
+
 func (order *Order) WithPhoneNumber(phone string) *Order {
 	order.Phone = phone
 	return order
