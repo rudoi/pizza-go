@@ -3,6 +3,8 @@ package pizza
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"strings"
 
 	"errors"
 )
@@ -37,38 +39,42 @@ type Description struct {
 type Option map[string]string
 
 type Order struct {
-	Address               *Address               `json:"Address"`
-	Coupons               []interface{}          `json:"Coupons"`
-	CustomerID            string                 `json:"CustomerID"`
-	Email                 string                 `json:"Email"`
-	Extension             string                 `json:"Extension"`
-	FirstName             string                 `json:"FirstName"`
-	LastName              string                 `json:"LastName"`
-	LanguageCode          string                 `json:"LanguageCode"`
-	OrderChannel          string                 `json:"OrderChannel"`
-	OrderID               string                 `json:"OrderID"`
-	OrderMethod           string                 `json:"OrderMethod"`
-	OrderTaker            *string                `json:"OrderTaker"`
-	Payments              []*Payment             `json:"Payments"`
-	Phone                 string                 `json:"Phone"`
-	Products              []*OrderProduct        `json:"Products"`
-	Market                string                 `json:"Market"`
-	Currency              string                 `json:"Currency"`
-	ServiceMethod         string                 `json:"ServiceMethod"`
-	SourceOrganizationURI string                 `json:"SourceOrganizationURI"`
-	StoreID               string                 `json:"StoreID"`
-	Tags                  map[string]interface{} `json:"Tags"`
-	Version               string                 `json:"Version"`
-	NoCombine             bool                   `json:"NoCombine"`
-	Partners              map[string]interface{} `json:"Partners"`
-	NewUser               bool                   `json:"NewUser"`
-	MetaData              map[string]interface{} `json:"metaData"`
-	Amounts               Amounts                `json:"Amounts"`
-	BusinessDate          string                 `json:"BusinessDate"`
-	EstimatedWaitMinutes  string                 `json:"EstimatedWaitMinutes"`
-	PriceOrderTime        string                 `json:"PriceOrderTime"`
-	Status                int                    `json:"Status"`
-	StatusItems           []*ObjectInfo          `json:"StatusItems"`
+	Address               *Address               `json:"Address,omitempty"`
+	Coupons               []*ObjectCode          `json:"Coupons,omitempty"`
+	CustomerID            string                 `json:"CustomerID,omitempty"`
+	Email                 string                 `json:"Email,omitempty"`
+	Extension             string                 `json:"Extension,omitempty"`
+	FirstName             string                 `json:"FirstName,omitempty"`
+	LastName              string                 `json:"LastName,omitempty"`
+	LanguageCode          string                 `json:"LanguageCode,omitempty"`
+	OrderChannel          string                 `json:"OrderChannel,omitempty"`
+	OrderID               string                 `json:"OrderID,omitempty"`
+	OrderMethod           string                 `json:"OrderMethod,omitempty"`
+	OrderTaker            *string                `json:"OrderTaker,omitempty"`
+	Payments              []*Payment             `json:"Payments,omitempty"`
+	Phone                 string                 `json:"Phone,omitempty"`
+	Products              []*OrderProduct        `json:"Products,omitempty"`
+	Market                string                 `json:"Market,omitempty"`
+	Currency              string                 `json:"Currency,omitempty"`
+	ServiceMethod         string                 `json:"ServiceMethod,omitempty"`
+	SourceOrganizationURI string                 `json:"SourceOrganizationURI,omitempty"`
+	StoreID               string                 `json:"StoreID,omitempty"`
+	Tags                  map[string]interface{} `json:"Tags,omitempty"`
+	Version               string                 `json:"Version,omitempty"`
+	NoCombine             bool                   `json:"NoCombine,omitempty"`
+	Partners              map[string]interface{} `json:"Partners,omitempty"`
+	NewUser               bool                   `json:"NewUser,omitempty"`
+	MetaData              map[string]interface{} `json:"metaData,omitempty"`
+	Amounts               Amounts                `json:"Amounts,omitempty"`
+	BusinessDate          string                 `json:"BusinessDate,omitempty"`
+	EstimatedWaitMinutes  string                 `json:"EstimatedWaitMinutes,omitempty"`
+	PriceOrderTime        string                 `json:"PriceOrderTime,omitempty"`
+	Status                int                    `json:"Status,omitempty"`
+	StatusItems           []*ObjectInfo          `json:"StatusItems,omitempty"`
+}
+
+type ObjectCode struct {
+	Code string `json:"Code"`
 }
 
 type Amounts map[string]float64
@@ -93,6 +99,11 @@ func (order *Order) WithAddress(address *Address) *Order {
 	return order
 }
 
+func (order *Order) WithPhoneNumber(phone string) *Order {
+	order.Phone = phone
+	return order
+}
+
 func (order *Order) WithStoreID(id string) *Order {
 	order.StoreID = id
 	return order
@@ -100,6 +111,10 @@ func (order *Order) WithStoreID(id string) *Order {
 
 func (order *Order) AddProduct(product *OrderProduct) {
 	order.Products = append(order.Products, product)
+}
+
+func (order *Order) AddCoupon(code string) {
+	order.Coupons = append(order.Coupons, &ObjectCode{Code: code})
 }
 
 // ValidateOrder validates the order and returns its price
@@ -123,19 +138,24 @@ func (c *Client) ValidateOrder(order *Order) (float64, error) {
 		return 0, err
 	}
 
-	if returnedOrder.Order.Status != 1 {
-		return 0, errors.New("order invalid, please confirm input")
-	}
-
 	if len(returnedOrder.Order.Products) == 0 || len(returnedOrder.Order.Products) != len(order.Products) {
 		return 0, errors.New("not all products were returned, possibly invalid product submitted")
 	}
 
-	for _, item := range returnedOrder.Order.StatusItems {
-		if item.Code == "BelowMinimumDeliveryAmount" {
-			return 0, errors.New("order does not meet minimum delivery price")
-		}
+	if returnedOrder.Order.Status != 1 {
+		return 0, buildValidationError(returnedOrder.Order.StatusItems)
 	}
 
 	return returnedOrder.Order.Amounts["Customer"], nil
+}
+
+func buildValidationError(statusItems []*ObjectInfo) error {
+	var err string
+	for _, status := range statusItems {
+		if status.Code != "AutoAddedOrderId" {
+			err = fmt.Sprintf("%s%q ", err, status.Code)
+		}
+	}
+
+	return fmt.Errorf("invalid order, status codes: %s", strings.TrimSpace(err))
 }

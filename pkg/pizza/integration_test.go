@@ -37,14 +37,30 @@ var _ = Describe("pricing flow", func() {
 			Expect(store).ToNot(BeNil())
 			Expect(store.StoreID).To(Equal("7229"))
 
+			By("looking up the store's menu")
+			menu, err := client.GetStoreMenu(store.StoreID)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(menu).ToNot(BeNil())
+
 			By("building an order")
-			order := NewOrder().WithAddress(address).WithStoreID(store.StoreID)
+			order := NewOrder().
+				WithAddress(address).
+				WithStoreID(store.StoreID).
+				WithPhoneNumber("1235467890")
+
 			order.AddProduct(product)
+			order.AddCoupon(menu.GetFiftyPercentCouponCode())
 
 			By("pricing the order")
 			price, err := client.ValidateOrder(order)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(price).ToNot(BeZero())
+
+			if store.IsOpen {
+				Expect(err).ToNot(HaveOccurred())
+				Expect(price).ToNot(BeZero())
+			} else {
+				Expect(err).To(HaveOccurred())
+				Expect(price).To(BeZero())
+			}
 		})
 	})
 })
