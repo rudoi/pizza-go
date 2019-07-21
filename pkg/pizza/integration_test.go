@@ -3,6 +3,7 @@
 package pizza
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -55,9 +56,11 @@ var _ = Describe("pricing flow", func() {
 			price, err := client.ValidateOrder(order)
 
 			if store.IsOpen {
+				fmt.Fprintln(GinkgoWriter, "store is open")
 				Expect(err).ToNot(HaveOccurred())
 				Expect(price).ToNot(BeZero())
 			} else {
+				fmt.Fprintln(GinkgoWriter, "store is closed")
 				Expect(err).To(HaveOccurred())
 				Expect(price).To(BeZero())
 			}
