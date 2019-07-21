@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"errors"
@@ -176,7 +177,15 @@ func (c *Client) PlaceOrder(order *Order) (*Order, error) {
 		return nil, err
 	}
 
-	resp, err := c.Post(orderURL, "application/json", b)
+	req, err := http.NewRequest("POST", orderURL, b)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Referer", refererURL)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
