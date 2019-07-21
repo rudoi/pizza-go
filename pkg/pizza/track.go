@@ -77,7 +77,7 @@ func (c *Client) GetTrackingUrl(phone string) (string, error) {
 }
 
 func (c *Client) Track(path string) (*TrackerStatus, error) {
-	url := trackBaseURL + "/v2/orders"
+	url := trackBaseURL + path
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
