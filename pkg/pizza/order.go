@@ -33,8 +33,8 @@ type OrderProduct struct {
 }
 
 type Description struct {
-	PortionCode string `json:"portionCode"`
-	Value       string `json:"value"`
+	PortionCode string `json:"portionCode,omitempty"`
+	Value       string `json:"value,omitempty"`
 }
 
 type Option map[string]string

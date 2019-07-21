@@ -7,23 +7,23 @@ import (
 )
 
 type Menu struct {
-	Meta     MenuMeta               `json:"Misc"`
-	Flavors  map[string]*ObjectMap  `json:"Flavors"`
-	Products map[string]*Product    `json:"Products"`
-	Sizes    map[string]*ObjectMap  `json:"Sizes"`
-	Toppings map[string]*ObjectMap  `json:"Toppings"`
-	Variants map[string]*Variant    `json:"Variants"`
-	Coupons  map[string]*ObjectInfo `json:"Coupons"`
+	Meta     MenuMeta               `json:"Misc,omitempty"`
+	Flavors  map[string]*ObjectMap  `json:"Flavors,omitempty"`
+	Products map[string]*Product    `json:"Products,omitempty"`
+	Sizes    map[string]*ObjectMap  `json:"Sizes,omitempty"`
+	Toppings map[string]*ObjectMap  `json:"Toppings,omitempty"`
+	Variants map[string]*Variant    `json:"Variants,omitempty"`
+	Coupons  map[string]*ObjectInfo `json:"Coupons,omitempty"`
 }
 
 type MenuMeta struct {
-	Status        int    `json:"Status"`
-	StoreID       string `json:"StoreID"`
-	BusinessDate  string `json:"BusinessDate"`
-	StoreAsOfTime string `json:"StoreAsOfTime"`
-	LanguageCode  string `json:"LanguageCode"`
-	Version       string `json:"Version"`
-	ExpiresOn     string `json:"ExpiresOn"`
+	Status        int    `json:"Status,omitempty"`
+	StoreID       string `json:"StoreID,omitempty"`
+	BusinessDate  string `json:"BusinessDate,omitempty"`
+	StoreAsOfTime string `json:"StoreAsOfTime,omitempty"`
+	LanguageCode  string `json:"LanguageCode,omitempty"`
+	Version       string `json:"Version,omitempty"`
+	ExpiresOn     string `json:"ExpiresOn,omitempty"`
 }
 
 type ObjectMap map[string]ObjectInfo
