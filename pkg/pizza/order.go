@@ -79,7 +79,15 @@ type ObjectCode struct {
 
 type Amounts map[string]float64
 
-type Payment struct{}
+type Payment struct {
+	Type         string  `json:"Type"`
+	Amount       float64 `json:"Amount,omitempty"`
+	CardType     string  `json:"CardType,omitempty"`
+	Number       string  `json:"Number,omitempty"`
+	Expiration   string  `json:"Expiration,omitempty"`
+	SecurityCode string  `json:"SecurityCode,omitempty"`
+	PostalCode   string  `json:"PostalCode,omitempty"`
+}
 
 func NewOrder() *Order {
 	return &Order{
@@ -149,6 +157,29 @@ func (c *Client) ValidateOrder(order *Order) (float64, error) {
 	}
 
 	return returnedOrder.Order.Amounts["Customer"], nil
+}
+
+func (c *Client) PlaceOrder(order *Order) (*Order, error) {
+	request := &OrderRequest{Order: order}
+
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(request); err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Post(orderURL, "application/json", b)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	returnedOrder := &OrderRequest{}
+	if err := json.NewDecoder(resp.Body).Decode(returnedOrder); err != nil {
+		return nil, err
+	}
+
+	return returnedOrder.Order, nil
 }
 
 func buildValidationError(statusItems []*ObjectInfo) error {
