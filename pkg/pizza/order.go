@@ -91,6 +91,8 @@ type Payment struct {
 
 func NewOrder() *Order {
 	return &Order{
+		Market:                "UNITED_STATES",
+		Currency:              "USD",
 		LanguageCode:          "en",
 		OrderChannel:          "OLO",
 		OrderMethod:           "Web",
